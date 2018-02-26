@@ -12,7 +12,7 @@ Note that if ElasTest fails to start it might be caused by well-known problem wi
 
     sudo sysctl -w vm.max_map_count=262144
 
-Then the python script can be run issuing the following command:
+Then the python script can be run issuing the following command (note that you should have logged in before in your browser):
     
     python elastest-import-py
 
