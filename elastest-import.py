@@ -16,9 +16,9 @@ data = '''{
   "suts": []
 }'''
 headers = {
-    'Origin': 'http://localhost:37000',
+    'Origin': ELASTEST_API_URL,
     'content-type': 'application/json',
-    'Referer': 'http://localhost:37000/'
+    'Referer': ELASTEST_API_URL
 }
 response = requests.post(url, headers=headers, data=data)
 
