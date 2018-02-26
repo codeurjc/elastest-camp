@@ -1,0 +1,21 @@
+networks:
+  bridge: {driver: bridge}
+services:
+  xwiki-postgres-db:
+    environment: [POSTGRES_ROOT_PASSWORD=xwiki, POSTGRES_PASSWORD=xwiki, POSTGRES_USER=xwiki,
+      POSTGRES_DB=xwiki, POSTGRES_INITDB_ARGS="--encoding=UTF8"]
+    image: postgres:10
+    networks: [bridge]
+    volumes: ['postgres-data:/var/lib/postgresql/data']
+  xwiki-web:
+    depends_on: [xwiki-postgres-db]
+    environment: [DB_USER=xwiki, DB_PASSWORD=xwiki, DB_DATABASE=xwiki, DB_HOST=xwiki-postgres-db]
+    image: xwiki8postgres:tomcat9-openjdk-8
+    networks: [bridge]
+    ports: ['8080:8080']
+    volumes: ['xwiki-data:/usr/local/xwiki']
+version: '2'
+volumes:
+  mysql-data: {}
+  postgres-data: {}
+  xwiki-data: {}
