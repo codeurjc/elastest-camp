@@ -1,12 +1,14 @@
 import yaml
 
+ELASTEST_API_URL='http://localhost:37000'
+
 # To run these tests in ElasTest we need a project. Then, for each docker-compose file generated (i.e., for each configuration), we need: 
 # 1. To create a SUT within the project configured with the corresponding docker-compose file (without the test container)
 # 2. To create a TJob within the project that will make use of the SUT configured in step 1. This TJob will run the xwiki-test container (songhui/xwiki-smoke-client docker image) against the SUT defined in 1
 
 # First we create the project
 import requests
-url = 'http://localhost:37000/api/project'
+url = "%s/api/project" % ELASTEST_API_URL
 data = '''{
   "name": "CAMP",
   "tjobs": [],
@@ -30,7 +32,7 @@ print('####################################')
 
 # Now we load the docker-compose file, and make some changes to adapt to the docker-compose format accepted by ElasTest's docker-compose agent
 # We're using docker-compose-2.yml as docker-compose-1.yml doesn't work due to an unavailable image
-with open("xwiki/docker-compose/docker-compose-2.yml", 'r') as ymlfile:
+with open("docker-compose-2.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
 # Remove test container (the test container will be configured in the TJob)
@@ -65,7 +67,7 @@ data = """{
     "commandsOption": "DEFAULT"
 }""" % (yaml.dump(cfg).replace('"', '\\"').replace("\n", "\\n"), response.text)
 print(data)
-response2 = requests.post('http://localhost:37000/api/sut', headers=headers, data=data)
+response2 = requests.post("%s/api/sut" % ELASTEST_API_URL, headers=headers, data=data)
 print(response2.status_code)
 print(response2.text)
 print('####################################')
@@ -82,7 +84,7 @@ data = """{
   "project": %s,
   "resultsPath": "/root/xwikismoke/target/surefire-reports/"
 }""" % (response2.text, response.text)
-response3 = requests.post('http://localhost:37000/api/tjob', headers=headers, data=data)
+response3 = requests.post("%s/api/tjob" % ELASTEST_API_URL, headers=headers, data=data)
 print(response3.status_code)
 print(response3.text)
 print('####################################')
@@ -90,8 +92,8 @@ print('####################################')
 
 # We're good to go. Let's run the tjob.
 import json
-print("http://localhost:37000/api/tjob/%s/exec" % json.loads(response3.text)['id'])
-response4 = requests.post("http://localhost:37000/api/tjob/%s/exec" % json.loads(response3.text)['id'], headers=headers, data="{}")
+print("%s/api/tjob/%s/exec" % (ELASTEST_API_URL, json.loads(response3.text)['id']))
+response4 = requests.post("%s/api/tjob/%s/exec" % (ELASTEST_API_URL, json.loads(response3.text)['id']), headers=headers, data="{}")
 print(response4.status_code)
 print(response4.text)
 print('####################################')
